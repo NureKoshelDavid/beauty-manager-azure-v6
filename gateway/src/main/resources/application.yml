@@ -1,0 +1,58 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "https://beauty-manager-frontend.azurewebsites.net/"
+            allowed-headers: "*"
+            allowed-methods: "*"
+
+      routes:
+        - id: saloon_service
+          uri: https://saloon-service.happydune-7db5729d.eastus.azurecontainerapps.io
+          predicates:
+            - Path=/saloons/**
+          filters:
+            - AuthenticationFilter
+
+        - id: user_service
+          uri: https://user-service.happydune-7db5729d.eastus.azurecontainerapps.io
+          predicates:
+            - Path=/users/**
+          filters:
+            - AuthenticationFilter
+
+        - id: order_service
+          uri: https://order-service.happydune-7db5729d.eastus.azurecontainerapps.io
+          predicates:
+            - Path=/orders/**
+          filters:
+            - AuthenticationFilter
+
+        - id: auth-service
+          uri: https://auth-service.happydune-7db5729d.eastus.azurecontainerapps.io
+          predicates:
+            - Path=/auth/**
+
+  application:
+    name: gateway
+
+server:
+  port: 8080
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: key_alias
+
+logging:
+  level:
+    org.springframework.cloud:
+      gateway: TRACE
+    root: info
+logging.level.org.springframework.cloud:
+  gateway:
+    route:
+      RouteDefinitionLocator: INFO
